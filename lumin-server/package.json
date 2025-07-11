@@ -7,6 +7,8 @@
   },
   "dependencies": {
     "@hono/zod-validator": "^0.7.0",
+    "@octokit/app": "^16.0.1",
+    "@octokit/request": "^10.0.3",
     "@sequelize/mysql": "^7.0.0-alpha.46",
     "@sequelize/sqlite3": "^7.0.0-alpha.46",
     "@types/jsonwebtoken": "^9.0.10",
