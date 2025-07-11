@@ -7,6 +7,8 @@ export interface ProjectAttributes {
   name: string;
   description: string;
   userId: ForeignKey<User['id']>;
+  githubRepo: string;
+  githubOwner: string;
 }
 
 export class Project extends Model<InferAttributes<Project>, InferCreationAttributes<Project, { omit: 'id' }>> {
@@ -16,6 +18,8 @@ export class Project extends Model<InferAttributes<Project>, InferCreationAttrib
   declare userId: ForeignKey<User['id']>;
   declare domain: CreationOptional<string>
   declare hasIndex: CreationOptional<boolean>
+  declare githubRepo: CreationOptional<string>
+  declare githubOwner: CreationOptional<string>
 }
 
 export const init = (sequelize: Sequelize) => Project.init(
@@ -51,6 +55,14 @@ export const init = (sequelize: Sequelize) => Project.init(
     hasIndex: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
+    },
+    githubRepo: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    githubOwner: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   },
   {
