@@ -12,7 +12,7 @@ export default {
     upload_folder: path.resolve(process.cwd(), process.env.UPLOAD_FOLDER || 'uploads'),
     github: {
         app_id: "1580260",
-        private_key: process.env.GITHUB_PRIVATE_KEY,
+        private_key: process.env.GITHUB_PRIVATE_KEY?.replace(/\\n/g, '\n'),
         client_id: "Iv23liQ5ZYiVoxRAJeYv",
         client_secret: process.env.GITHUB_CLIENT_SECRET,
         webhook_secret: "mjqwmxhn"

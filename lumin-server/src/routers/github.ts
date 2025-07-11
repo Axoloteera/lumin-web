@@ -47,10 +47,10 @@ github.post('/_webhook', async (c) => {
     }
 
     // Update check status to in_progress
-    await updateCheckStatus(owner, repo, sha, 'in_progress');
+    await updateCheckStatus(owner, repo, sha, 'in_progress', payload.installation?.id);
 
     // Download and process the repository
-    const success = await downloadAndProcessRepo(owner, repo, project, ref);
+    const success = await downloadAndProcessRepo(owner, repo, project, ref, payload.installation?.id);
 
     // Update check status based on result
     await updateCheckStatus(
@@ -58,6 +58,7 @@ github.post('/_webhook', async (c) => {
       repo,
       sha,
       'completed',
+        payload.installation?.id,
       success ? 'success' : 'failure',
       success ? `https://${project.domain}.axopl.com` : undefined
     );

@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Project } from '../database/models/project';
 import { processZipFileUpload } from '../utils/github';
 import { Octokit } from '@octokit/rest';
+import { createAppAuth } from '@octokit/auth-app';
 import config from '../config';
 
 // GitHub App credentials
@@ -19,43 +20,31 @@ export const downloadAndProcessRepo = async (
   owner: string,
   repo: string,
   project: Project,
-  ref: string = 'main'
+  ref: string = 'main',
+  installationId: number
 ): Promise<boolean> => {
   try {
     console.log(`Downloading repository ${owner}/${repo} at ref ${ref}`);
 
     // Initialize Octokit with GitHub App authentication
     const octokit = new Octokit({
+      authStrategy: createAppAuth,
       auth: {
         appId: GITHUB_APP_ID,
         privateKey: GITHUB_PRIVATE_KEY,
+        installationId: installationId,
       },
     });
 
-    // Get an installation token for the repository
-    const { data: installationData } = await octokit.apps.getRepoInstallation({
+    // Download the repository using Octokit
+    const { data } = await octokit.repos.downloadZipballArchive({
       owner,
       repo,
+      ref
     });
-
-    const { data: tokenData } = await octokit.apps.createInstallationAccessToken({
-      installation_id: installationData.id,
-    });
-
-    // Use the installation token to download the repository
-    const response = await axios.get(
-      `https://api.github.com/repos/${owner}/${repo}/zipball/${ref}`,
-      {
-        headers: {
-          Authorization: `token ${tokenData.token}`,
-          Accept: 'application/vnd.github.v3+json',
-        },
-        responseType: 'arraybuffer',
-      }
-    );
 
     // Process the ZIP file
-    await processZipFileUpload(response.data, project);
+    await processZipFileUpload(data as ArrayBuffer, project);
 
     console.log(`Successfully processed repository ${owner}/${repo}`);
     return true;
@@ -73,31 +62,36 @@ export const updateCheckStatus = async (
   repo: string,
   sha: string,
   status: 'queued' | 'in_progress' | 'completed',
+  installationId: number,
   conclusion?: 'success' | 'failure' | 'neutral' | 'cancelled' | 'skipped' | 'timed_out' | 'action_required',
-  detailsUrl?: string
+  detailsUrl?: string,
 ): Promise<void> => {
   try {
     // Initialize Octokit with GitHub App authentication
     const octokit = new Octokit({
+      authStrategy: createAppAuth,
       auth: {
         appId: GITHUB_APP_ID,
         privateKey: GITHUB_PRIVATE_KEY,
+        installationId: installationId
       },
     });
+
+
 
     // Create or update check run
     await octokit.checks.create({
       owner,
       repo,
-      name: 'Lumin Deployment',
+      name: 'AxoGuan Deployment',
       head_sha: sha,
       status,
       conclusion,
       details_url: detailsUrl,
       output: {
         title: status === 'completed' ? 'Deployment completed' : 'Deployment in progress',
-        summary: status === 'completed' 
-          ? `The deployment ${conclusion === 'success' ? 'succeeded' : 'failed'}.` 
+        summary: status === 'completed'
+          ? `The deployment ${conclusion === 'success' ? 'succeeded' : 'failed'}.`
           : 'The deployment is in progress.',
       },
     });
