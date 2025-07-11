@@ -13,6 +13,7 @@ const GITHUB_WEBHOOK_SECRET = config.github.webhook_secret;
 
 /**
  * Downloads a repository as a ZIP file and processes it for a project
+ * Uses GitHub API with authentication to support both public and private repositories
  */
 export const downloadAndProcessRepo = async (
   owner: string,
@@ -23,11 +24,35 @@ export const downloadAndProcessRepo = async (
   try {
     console.log(`Downloading repository ${owner}/${repo} at ref ${ref}`);
 
-    // Download the repository as a ZIP file
-    const zipUrl = `https://github.com/${owner}/${repo}/archive/refs/heads/${ref}.zip`;
-    const response = await axios.get(zipUrl, {
-      responseType: 'arraybuffer',
+    // Initialize Octokit with GitHub App authentication
+    const octokit = new Octokit({
+      auth: {
+        appId: GITHUB_APP_ID,
+        privateKey: GITHUB_PRIVATE_KEY,
+      },
     });
+
+    // Get an installation token for the repository
+    const { data: installationData } = await octokit.apps.getRepoInstallation({
+      owner,
+      repo,
+    });
+
+    const { data: tokenData } = await octokit.apps.createInstallationAccessToken({
+      installation_id: installationData.id,
+    });
+
+    // Use the installation token to download the repository
+    const response = await axios.get(
+      `https://api.github.com/repos/${owner}/${repo}/zipball/${ref}`,
+      {
+        headers: {
+          Authorization: `token ${tokenData.token}`,
+          Accept: 'application/vnd.github.v3+json',
+        },
+        responseType: 'arraybuffer',
+      }
+    );
 
     // Process the ZIP file
     await processZipFileUpload(response.data, project);

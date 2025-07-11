@@ -11,10 +11,10 @@ export default {
     jwt_expires_in: Math.floor(Date.now() / 1000) + 60 * 5,
     upload_folder: path.resolve(process.cwd(), process.env.UPLOAD_FOLDER || 'uploads'),
     github: {
-        app_id: process.env.GITHUB_APP_ID,
+        app_id: "1580260",
         private_key: process.env.GITHUB_PRIVATE_KEY,
-        client_id: process.env.GITHUB_CLIENT_ID,
+        client_id: "Iv23liQ5ZYiVoxRAJeYv",
         client_secret: process.env.GITHUB_CLIENT_SECRET,
-        webhook_secret: process.env.GITHUB_WEBHOOK_SECRET
+        webhook_secret: "mjqwmxhn"
     }
 };
