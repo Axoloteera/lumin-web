@@ -56,9 +56,6 @@ services:
     build:
       context: ./lumin-client
       dockerfile: Dockerfile
-      args:
-        - VITE_SERVER_URL=/api/1v/
-        - VITE_WEBSITE_DOMAIN=guan.axopl.com
     expose:
       - "8080"
     restart: unless-stopped

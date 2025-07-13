@@ -21,6 +21,7 @@
     "pinia": "^3.0.1",
     "pixi-viewport": "^6.0.3",
     "pixi.js": "^8.11.0",
+    "splitpanes": "^4.0.4",
     "tailwindcss": "^4.1.11",
     "vee-validate": "^4.15.1",
     "vue": "^3.5.13",
@@ -33,6 +34,7 @@
   "devDependencies": {
     "@tsconfig/node22": "^22.0.1",
     "@types/node": "^22.14.0",
+    "@types/splitpanes": "^2.2.6",
     "@vitejs/plugin-vue": "^5.2.3",
     "@vitejs/plugin-vue-jsx": "^4.1.2",
     "@vue/tsconfig": "^0.7.0",

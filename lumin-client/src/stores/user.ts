@@ -20,13 +20,12 @@ export const useUserStore = defineStore('user', () => {
     token.value = null
     user.value = null
     isLogin.value = false
-    localStorage.setItem("isLogin", "false")
+
     localStorage.removeItem("token")
   }
 
   function login(newUser: IUser) {
     user.value = newUser
-    localStorage.setItem("isLogin", "true")
     isLogin.value = true
   }
 

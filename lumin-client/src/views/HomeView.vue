@@ -55,18 +55,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="hero mt-3">
-    <div class="hero-content text-center">
-      <div class="max-w-md">
-        <h1 class="text-5xl font-bold">蝾螈馆</h1>
-        <p class="py-6">
-          继「蝾螈池」之后的全新篇章——<strong>蝾螈馆</strong>
-          蝾螈馆正在全力开发中！虽然还没完全布置好，但部分功能已经开放，欢迎大家提前入住！
-          当前可使用功能：静态网站托管
-        </p>
-      </div>
-    </div>
-  </div>
   <div v-if="user.isLogin">
     <button @click="createProject" class="btn w-full mt-3">创建</button>
     <div class="grid gap-4 mt-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -78,7 +66,6 @@ onMounted(() => {
       </div>
     </div>
   </div>
-  <p v-else class="text-center">请登录后使用</p>
 
   <h1 class="my-2 text-2xl font-bold">其他人作品</h1>
   <div v-for="project in otherProjects" class="flex gap-2">

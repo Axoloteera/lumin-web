@@ -71,9 +71,11 @@ user.post('/login', zValidator('json', loginSchema), async (c) => {
     const { email, password } = c.req.valid('json');
 
     const foundUser = await User.findOne({ where: { email } });
-    // @ts-ignore
+    if (!foundUser) {
+        return c.json({ error: '无效的邮箱或错误的密码' }, 401);
+    }
     const isPasswordValid = await comparePassword(password, foundUser.password);
-    if (!isPasswordValid || !foundUser) {
+    if (!isPasswordValid) {
         return c.json({ error: '无效的邮箱或错误的密码' }, 401);
     }
 

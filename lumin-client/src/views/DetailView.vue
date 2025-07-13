@@ -1,8 +1,12 @@
 <template>
     <div class="flex flex-col gap-3 card bg-base-100 shadow-sm mx-auto p-4 mt-4">
         <p class="text-3xl font-bold mx-auto">编辑作品</p>
-        <p v-if="project?.domain">访问: <a :href="websiteUrl" class="link link-primary">{{ websiteUrl }}</a></p>
-        <p v-else>请先设置子域名后访问您的网站</p>
+        <div class="flex">
+            <p class="text-2xl" v-if="project?.domain">访问: <a :href="websiteUrl" class="link link-primary">{{ websiteUrl }}</a></p>
+            <p class="text-2xl" v-else>请先设置子域名后访问您的网站</p>
+            <div class="flex-1"></div>
+            <router-link class="btn btn-primary" :to="`/editor/${project?.id}`">进入编辑器</router-link>
+        </div>
         <Field :errors="errors.name" label="作品名" v-slot="{ inputClasses }">
             <input v-model="name" v-bind="nameAttrs" type="text" class="input w-full" :class="inputClasses"
                 placeholder="作品名" />
@@ -35,7 +39,7 @@ import { useRoute } from 'vue-router';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as zod from 'zod';
-import http from '../utils/http';
+import http, { toSubWeb } from '../utils/http';
 import type { IProject } from '@/interface';
 import Field from '@/components/Field.vue';
 
@@ -66,13 +70,7 @@ const route = useRoute();
 const project = ref<IProject>();
 const fileInput = ref<HTMLInputElement | null>(null);
 
-const websiteUrl = computed(() => {
-  const protocol = window.location.protocol;
-  const domain = project.value?.domain
-    ? `${project.value.domain}.${import.meta.env.VITE_WEBSITE_DOMAIN}`
-    : '';
-  return domain ? `${protocol}//${domain}` : '';
-});
+const websiteUrl = computed(() => toSubWeb(project.value));
 
 watch(
     () => route.params.id,
@@ -96,16 +94,16 @@ const submitForm = handleSubmit(async (values) => {
     loading.value = true
     try {
         const update = await http.post('/projects/update/' + project.value?.id, values)
-    
+
         if (values.file) {
             const formData = new FormData();
             formData.append('file', values.file);
-    
+
             await http.post('/projects/upload-zip/' + project.value?.id, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
         }
-    
+
         project.value = update.data.project
     } finally {
         loading.value = false

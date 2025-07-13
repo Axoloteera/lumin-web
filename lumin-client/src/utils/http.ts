@@ -68,10 +68,14 @@ declare module 'axios' {
 export default instance
 
 
-export const toSubWeb = (project: IProject) => {
-    const protocol = window.location.protocol;
-    const domain = project?.domain
-        ? `${project.domain}.${import.meta.env.VITE_WEBSITE_DOMAIN}`
-        : '';
-    return domain ? `${protocol}//${domain}` : '';
+export const toSubWeb = (project?: IProject) => {
+    if (!project || !project.domain) {
+        return ''
+    }
+
+    if (import.meta.env.VITE_DEV) {
+        return `${import.meta.env.VITE_SERVER_URL}projects/view/${project.domain}/`
+    } else {
+        return `${project.domain}.${import.meta.env.VITE_WEBSITE_DOMAIN}`
+    }
 }

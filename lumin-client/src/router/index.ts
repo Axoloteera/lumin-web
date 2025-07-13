@@ -29,9 +29,12 @@ const router = createRouter({
       component: PlayView
     },
     {
-      path: '/editor',
+      path: '/editor/:id',
       name: 'editor',
-      component: EditorView
+      component: EditorView,
+      meta: {
+        full: true
+      }
     }
   ],
 })
